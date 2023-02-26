@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcStockService";
+
+
+// The greeting service definition.
+service Stocks {
+  // Sends a greeting
+  rpc AddProducts(ProductStock) returns (ProductStock);
+  rpc IncreaseStock(ProductStock) returns (ProductStock);
+  rpc DecreaseStock(ProductStock) returns (ProductStock);
+  rpc GetStock(ProductsModel) returns (ProductStock);
+}
+
+// The request message containing the user's name.
+message ProductsModel {
+  int32 id =1;
+  string description = 2;
+}
+message ProductStock{
+	int32 id =1 ;
+	ProductsModel product=2 ;
+	int32 quantity = 3;
+}
