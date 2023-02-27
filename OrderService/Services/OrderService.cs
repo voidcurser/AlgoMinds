@@ -34,61 +34,73 @@ public class OrderService : Orders.OrdersBase
     }
     public override async Task<Response> PlaceOrder(OrderModel request, ServerCallContext context)
     {
-        using var channel = GrpcChannel.ForAddress("https://localhost:7053");
-        var client = new Stocks.StocksClient(channel);
-        var toVerify = new ResponseProductCollection();
-        foreach(var p in request.Products)
+        try
         {
-            toVerify.AllProducts.Add(new ProductStock
-            {
-                Product = new ProductsModel { Id = p.Id, Description = p.Description},
-                Quantity = p.Quantity
-            });
-        }
-
-        var hasStock = await client.IsStockAvailableForTheOrderAsync(toVerify);
-        if (hasStock is not null && hasStock.Result)
-        {
-            var order = new Order();
-            order.Products = new List<Products>();
+            using var channel = GrpcChannel.ForAddress("https://localhost:7053");
+            var client = new Stocks.StocksClient(channel);
+            var toVerify = new ResponseProductCollection();
             foreach (var p in request.Products)
             {
-                order.Products.Add(new Products()
+                toVerify.AllProducts.Add(new ProductStock
                 {
-                    Id = p.Id,
-                    Description = p.Description,
+                    Product = new ProductsModel { Id = p.Id, Description = p.Description },
+                    Quantity = p.Quantity
                 });
             }
-            var sequence = _counters.FindOneAndUpdate(
-                                   Builders<Sequence>.Filter.Eq(x => x.Name, "orders"),
-                                   Builders<Sequence>.Update.Inc(x => x.Value, 1));
 
-            var nextId = sequence.Value;
-            order.Id = nextId;
-            await _orders.InsertOneAsync(order);
-            foreach (var p in request.Products)
+            var hasStock = await client.IsStockAvailableForTheOrderAsync(toVerify);
+            if (hasStock is not null && hasStock.Result)
             {
-                await client.DecreaseStockAsync(new ProductStock
+                var order = new Order();
+                order.Products = new List<Products>();
+                foreach (var p in request.Products)
                 {
-                    Quantity = p.Quantity,
-                    Product = new ProductsModel()
+                    order.Products.Add(new Products()
                     {
-                        Id = p.Id
-                    }
-                });
+                        Id = p.Id,
+                        Description = p.Description,
+                    });
+                }
+                var sequence = _counters.FindOneAndUpdate(
+                                       Builders<Sequence>.Filter.Eq(x => x.Name, "orders"),
+                                       Builders<Sequence>.Update.Inc(x => x.Value, 1));
+
+                var nextId = sequence.Value;
+                order.Id = nextId;
+                await _orders.InsertOneAsync(order);
+                foreach (var p in request.Products)
+                {
+                    await client.DecreaseStockAsync(new ProductStock
+                    {
+                        Quantity = p.Quantity,
+                        Product = new ProductsModel()
+                        {
+                            Id = p.Id
+                        }
+                    });
+                }
+                _logger.LogError($"Order executed with success!");
+                return new Response
+                {
+                    Message = "Order executed with success!"
+                };
             }
-            
-            return new Response
+            else
             {
-                Message ="Order executed with success!"
-            };
+                _logger.LogError($"There is not enough stock to fullfill the order");
+                return new Response
+                {
+                    Message = "There is not enough stock to fullfill the order"
+                };
+            }
         }
-        else
+        catch (Exception ex)
         {
+            _logger.LogError($"There was a error on PlaceOrder: {ex.Message}");
             return new Response
             {
-                Message="There is not enough stock to fullfill the order"
+                Message = "Error placing an order!"
             };
-        }
+        }       
     }
 }

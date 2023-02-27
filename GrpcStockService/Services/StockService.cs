@@ -55,7 +55,7 @@ public class StockService : Stocks.StocksBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"There was an error adding the product!");
+            _logger.LogError($"There was an error adding the product!:{ex.Message}");
             return new Response
             {
                 Message = $"There was an error adding the product!"
@@ -68,15 +68,16 @@ public class StockService : Stocks.StocksBase
         {
             var filter = Builders<Stock>.Filter.Eq(x => x.Product.Id, request.Product.Id);
             var update = Builders<Stock>.Update.Inc(x => x.NumberOfProducts, request.Quantity);
-            var t = await _stocks.UpdateOneAsync(filter, update);
-
+            await _stocks.UpdateOneAsync(filter, update);
+            _logger.LogError($"Product updated successfully");
             return new Response
             {
-                Message = $"Product updating successfully"
+                Message = $"Product updated successfully"
             };
         }
         catch (Exception ex)
         {
+            _logger.LogError($"There was an error updating the product!: {ex.Message}");
             return new Response
             {
                 Message = $"There was an error updating the product!"
@@ -91,14 +92,15 @@ public class StockService : Stocks.StocksBase
             var filter = Builders<Stock>.Filter.Eq(x => x.Product.Id, request.Product.Id);
             var update = Builders<Stock>.Update.Inc(x => x.NumberOfProducts, -request.Quantity);
             await _stocks.UpdateOneAsync(filter, update);
-
+            _logger.LogError($"Product updated successfully");
             return new Response
             {
-                Message = $"Product {stock.Product.Description} updated successfully"
+                Message = $"Product updated successfully"
             };
         }
         catch (Exception ex)
         {
+            _logger.LogError($"There was an error updating the product!:{ex.Message}");
             return new Response
             {
                 Message = $"There was an error updating the product!"
@@ -110,7 +112,7 @@ public class StockService : Stocks.StocksBase
         try
         {
             var stockCurrentProduct = await _stocks.Find(x => x.Product.Description == request.Description).FirstOrDefaultAsync();
-
+            _logger.LogError($"GetStock executed successfully");
             return new ResponseInt
             {
                 Result = stockCurrentProduct is not null ? stockCurrentProduct.NumberOfProducts : -1,
@@ -119,6 +121,7 @@ public class StockService : Stocks.StocksBase
         }
         catch (Exception ex)
         {
+            _logger.LogError($"There was an error updating the product!:{ex.Message}");
             return new ResponseInt
             {
                 Result = -1,
@@ -131,31 +134,39 @@ public class StockService : Stocks.StocksBase
         try
         {
             var result = true;
-            foreach(var p in request.AllProducts)
+            foreach (var p in request.AllProducts)
             {
                 var stockCurrentProduct = await _stocks.Find(x => x.Product.Id == p.Product.Id).FirstOrDefaultAsync();
-                if(stockCurrentProduct is not null) {
-                    if(stockCurrentProduct.NumberOfProducts < p.Quantity)
+                if (stockCurrentProduct is not null)
+                {
+                    if (stockCurrentProduct.NumberOfProducts < p.Quantity)
                     {
                         result = false;
                     }
                 }
             }
-            if(result)
+            if (result)
+            {
+                _logger.LogError($"IsStockAvailableForTheOrder executed successfully");
                 return new ResponseBool
-                {   
+                {
                     Result = true,
                     Message = $"GetStock executed successfully"
                 };
+            }
             else
+            {
+                _logger.LogError($"There is not enough stock for your order");
                 return new ResponseBool
                 {
                     Result = false,
                     Message = $"There is not enough stock for your order"
                 };
+            }
         }
         catch (Exception ex)
         {
+            _logger.LogError($"There was an error updating the product!:{ex.Message}");
             return new ResponseBool
             {
                 Result = false,
@@ -165,23 +176,34 @@ public class StockService : Stocks.StocksBase
     }
     public override async Task<ResponseProductCollection> GetAllProducts(EmptyObject request, ServerCallContext context)
     {
-        var allStocks = await _stocks.Find(x => true).ToListAsync();
         var result = new ResponseProductCollection();
-        foreach (var st in allStocks)
+        try
         {
-            var toAdd = new ProductStock
+            var allStocks = await _stocks.Find(x => true).ToListAsync();
+            foreach (var st in allStocks)
             {
-                Id = st.Id,
-                Product = new ProductsModel
+                var toAdd = new ProductStock
                 {
-                    Id = st.Product.Id,
-                    Description = st.Product.Description,
-                },
-                Quantity = st.NumberOfProducts
-            };
+                    Id = st.Id,
+                    Product = new ProductsModel
+                    {
+                        Id = st.Product.Id,
+                        Description = st.Product.Description,
+                    },
+                    Quantity = st.NumberOfProducts
+                };
 
-            result.AllProducts.Add(toAdd);
+                result.AllProducts.Add(toAdd);
+            }
+            _logger.LogError($"GetAllProducts executed without error!");
+            return result;
         }
-        return result;
+        catch (Exception ex)
+        {
+            _logger.LogError($"There was an error returning the list of products!:{ex.Message} ");
+            return result;
+        }
+
+
     }
 }
