@@ -79,7 +79,7 @@ public class OrderService : Orders.OrdersBase
                         }
                     });
                 }
-                _logger.LogError($"Order executed with success!");
+                _logger.LogInformation($"Order executed with success!");
                 return new Response
                 {
                     Message = "Order executed with success!"
@@ -87,7 +87,7 @@ public class OrderService : Orders.OrdersBase
             }
             else
             {
-                _logger.LogError($"There is not enough stock to fullfill the order");
+                _logger.LogInformation($"There is not enough stock to fullfill the order");
                 return new Response
                 {
                     Message = "There is not enough stock to fullfill the order"

@@ -69,7 +69,7 @@ public class StockService : Stocks.StocksBase
             var filter = Builders<Stock>.Filter.Eq(x => x.Product.Id, request.Product.Id);
             var update = Builders<Stock>.Update.Inc(x => x.NumberOfProducts, request.Quantity);
             await _stocks.UpdateOneAsync(filter, update);
-            _logger.LogError($"Product updated successfully");
+            _logger.LogInformation($"Product updated successfully");
             return new Response
             {
                 Message = $"Product updated successfully"
@@ -92,7 +92,7 @@ public class StockService : Stocks.StocksBase
             var filter = Builders<Stock>.Filter.Eq(x => x.Product.Id, request.Product.Id);
             var update = Builders<Stock>.Update.Inc(x => x.NumberOfProducts, -request.Quantity);
             await _stocks.UpdateOneAsync(filter, update);
-            _logger.LogError($"Product updated successfully");
+            _logger.LogInformation($"Product updated successfully");
             return new Response
             {
                 Message = $"Product updated successfully"
@@ -112,7 +112,7 @@ public class StockService : Stocks.StocksBase
         try
         {
             var stockCurrentProduct = await _stocks.Find(x => x.Product.Description == request.Description).FirstOrDefaultAsync();
-            _logger.LogError($"GetStock executed successfully");
+            _logger.LogInformation($"GetStock executed successfully");
             return new ResponseInt
             {
                 Result = stockCurrentProduct is not null ? stockCurrentProduct.NumberOfProducts : -1,
@@ -147,7 +147,7 @@ public class StockService : Stocks.StocksBase
             }
             if (result)
             {
-                _logger.LogError($"IsStockAvailableForTheOrder executed successfully");
+                _logger.LogInformation($"IsStockAvailableForTheOrder executed successfully");
                 return new ResponseBool
                 {
                     Result = true,
@@ -156,7 +156,7 @@ public class StockService : Stocks.StocksBase
             }
             else
             {
-                _logger.LogError($"There is not enough stock for your order");
+                _logger.LogInformation($"There is not enough stock for your order");
                 return new ResponseBool
                 {
                     Result = false,
@@ -195,7 +195,7 @@ public class StockService : Stocks.StocksBase
 
                 result.AllProducts.Add(toAdd);
             }
-            _logger.LogError($"GetAllProducts executed without error!");
+            _logger.LogInformation($"GetAllProducts executed without error!");
             return result;
         }
         catch (Exception ex)
