@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\Data
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcStockService", "GrpcStockService\GrpcStockService.csproj", "{975D3A3F-73B1-41CC-A13C-8681113FC622}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgoShop", "AlgoShop\AlgoShop.csproj", "{5B194B41-D362-4BA9-A14F-2FDA8E3D0895}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{975D3A3F-73B1-41CC-A13C-8681113FC622}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{975D3A3F-73B1-41CC-A13C-8681113FC622}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{975D3A3F-73B1-41CC-A13C-8681113FC622}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B194B41-D362-4BA9-A14F-2FDA8E3D0895}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B194B41-D362-4BA9-A14F-2FDA8E3D0895}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B194B41-D362-4BA9-A14F-2FDA8E3D0895}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B194B41-D362-4BA9-A14F-2FDA8E3D0895}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

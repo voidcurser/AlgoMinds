@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-option csharp_namespace = "GrpcOrderService";
+option csharp_namespace = "AlgoShop";
 
 service Orders {
-  rpc PlaceOrder (OrderModel) returns (Response);
+  rpc PlaceOrder (OrderModel) returns (ResponseOrder);
 }
 
 message ProductsOrderModel {
@@ -16,6 +16,6 @@ message OrderModel {
   int32 id = 1;
   repeated ProductsOrderModel products = 2;
 }
-message Response{
+message ResponseOrder{
 	string message = 1;
 }

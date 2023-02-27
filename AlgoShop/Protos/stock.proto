@@ -1,7 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "GrpcStockService";
-
+option csharp_namespace = "AlgoShop";
 
 service Stocks {
   rpc AddProducts(ProductStock) returns (Response);

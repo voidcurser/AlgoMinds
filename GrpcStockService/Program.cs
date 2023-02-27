@@ -1,4 +1,6 @@
 using GrpcStockService.Services;
+using Microsoft.Extensions.Configuration;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
-
+builder.Services.AddTransient<IMongoClient>(sp =>
+{
+    return new MongoClient("mongodb://localhost:27017");
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
